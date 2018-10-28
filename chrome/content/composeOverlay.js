@@ -25,10 +25,14 @@ var ReplyAsOriginalRecipient = {
     if (!this.isReply())
       return;
 
+    /* Get use_plus preference */
+    usePlus = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService).getBranch("extensions.replyasoriginalrecipient.").getBoolPref("use_plus");
+  
     /* Get original recipient */
     originalHeader = this.getMessageHeaderFromURI(gMsgCompose.originalMsgURI);
     originalRecipient = originalHeader.mime2DecodedRecipients;
-    if (originalRecipient.indexOf(",") != -1 || originalRecipient.indexOf("+") == -1)
+    if (originalRecipient.indexOf(",") != -1 ||
+        (usePlus && originalRecipient.indexOf("+") == -1))
       return;
 
     /* Adapted from mail/components/compose/content/MsgComposeCommands.js */
