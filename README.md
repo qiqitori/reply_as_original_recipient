@@ -4,8 +4,10 @@ Thunderbird extension. This Thunderbird extension automatically changes the From
 
 To "compile" this into an extension ready to use in Thunderbird, zip everything up (you don't need the README.md or the LICENSE though) and change the .zip extension to .xpi.
 Example:
+```
 git clone https://github.com/qiqitori/reply_as_original_recipient.git
 cd reply_as_original_recipient
 zip -r * ../reply_as_original_recipient.xpi
+```
 
 For more information, see https://blog.qiqitori.com/?p=194
