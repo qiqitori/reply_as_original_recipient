@@ -25,16 +25,28 @@ var ReplyAsOriginalRecipient = {
     if (!this.isReply())
       return;
 
-    /* Get use_plus preference */
-    usePlus = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService).getBranch("extensions.replyasoriginalrecipient.").getBoolPref("use_plus");
-  
-    /* Get original recipient */
-    originalHeader = this.getMessageHeaderFromURI(gMsgCompose.originalMsgURI);
-    originalRecipient = originalHeader.mime2DecodedRecipients;
-    if (originalRecipient.indexOf(",") != -1 ||
-        (usePlus && originalRecipient.indexOf("+") == -1))
-      return;
-
+    /* Get patterns preference (modified by Samuel Kirschner, according to the comment on https://blog.qiqitori.com/?p=194 ) */
+    var patterns = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService).getBranch("extensions.replyasoriginalrecipient.").getCharPref("patterns"); // default is "*+*"
+    var mimeConvert = Components.classes["@mozilla.org/messenger/mimeconverter;1"]
+        .getService(Components.interfaces.nsIMimeConverter);
+	patterns = patterns.trim().replace(/[^a-zA-Z0-9 ]/g, '\\$&').replace(/\\\*/g, '.*').split(/ *\\, */).join('|');
+	var regex = new RegExp('^ *(' + patterns + ') *$|< *(' + patterns + ') *>', 'i');
+	
+    /* Get original recipient (modified by Samuel Kirschner, according to the comment on https://blog.qiqitori.com/?p=194 ) */
+	var i;
+    var originalHeader = this.getMessageHeaderFromURI(gMsgCompose.originalMsgURI);
+    var originalRecipient = null;
+	
+	var recipientList = (originalHeader.recipients + ',' + originalHeader.ccList).split(/,/);
+	for(i = 0; i<recipientList.length; i++) {
+		var recipient = mimeConvert.decodeMimeHeader( recipientList[i].trim(), null, false, true );
+		if(regex.test(recipient) && recipient) {
+			if(originalRecipient !== null && originalRecipient !== recipientList[i].trim()) return; //abort in case there is more than one match
+			originalRecipient = mimeConvert.decodeMimeHeader( recipientList[i].trim(), null, false, true );
+		} 
+	}
+	if(originalRecipient === null) return; //abort in case there was no match
+	
     /* Adapted from mail/components/compose/content/MsgComposeCommands.js */
     var customizeMenuitem = document.getElementById("cmd_customizeFromAddress");
     customizeMenuitem.setAttribute("disabled", "true");

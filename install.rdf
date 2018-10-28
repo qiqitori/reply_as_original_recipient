@@ -5,7 +5,7 @@
   <RDF:Description RDF:about="urn:mozilla:install-manifest"
                    em:id="replyasoriginalrecipient@qiqitori.com"
                    em:name="Reply As Original Recipient"
-                   em:version="1.1"
+                   em:version="1.2"
                    em:description="Reply with the From: field set to the To: field from the original email."
                    em:creator="Qiqitori"
                    em:homepageURL="http://blog.qiqitori.com/?p=194">

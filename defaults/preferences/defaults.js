@@ -1,1 +1,1 @@
-pref("extensions.replyasoriginalrecipient.use_plus", true);
+pref("extensions.replyasoriginalrecipient.patterns", "*+*");
