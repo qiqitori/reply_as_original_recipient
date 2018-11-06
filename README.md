@@ -25,12 +25,12 @@ The extension will still work when there are multiple "To:" entries, as long as 
 The option "use_plus" is replaced by "extensions.replyasoriginalrecipient.patterns".
 
 #### Example of patterns:
-`name+*@gmail.com` (Thx @Yves for the idea)
-`*@example.org`
-`*+*` (the default)
-`*` (same behaviour as "use_plus" set to false in version 1.1)
-`*@example.org,*+*` (multiple patterns are separated by comma)
+- `name+*@gmail.com` (Thx @Yves for the idea)
+- `*@example.org`
+- `*+*` (the default)
+- `*` (same behaviour as "use_plus" set to false in version 1.1)
+- `*@example.org,*+*` (multiple patterns are separated by comma)
 
-The patterns are matched case insensitive against the full recipient e.g. `My Name <my.name@example.com>` as well as the email (the part between `<` and `>`).
-Only `*` and `,` have special meaning in the patterns option.
+The patterns are matched case insensitive against the full recipient e.g. `My Name <my.name@example.com>` as well as the email (the part between `<` and `>`).  
+Only `*` and `,` have special meaning in the patterns option.  
 Blanks at the beginning and the end are ignored.
