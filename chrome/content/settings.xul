@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+<prefwindow  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" title="Reply As Original Recipient">
+	<prefpane style="overflow: auto;">
+		<preferences>
+	    		<preference id="pref_pattern" name="extensions.replyasoriginalrecipient.patterns" type="string" />
+		</preferences>
+		<vbox flex="1">
+			<groupbox flex="1">
+				<caption label="Patterns"/>
+				<vbox>
+					<textbox preference="pref_pattern" id="pattern_textbox"/>
+					<text value="The patterns are matched case insensitive against the full recipient e.g."/>
+					<text value="'My Name &lt;my.name@example.org&gt;' as well as the email (the part between '&lt;' and '&gt;')."/>
+					<text value="Only `*` and `,` have special meaning in the patterns string."/>
+					<text value="Blanks at the beginning and the end are ignored."/>
+					<groupbox flex="1">
+						<caption label="Examples"/>
+						<vbox>
+							<text value="name+*@gmail.com"/>
+							<text value="*@example.org"/>
+							<text value="The default is: *+*"/>
+							<text value="For the same behaviour as “use_plus” set to false in version 1.1: *"/>
+							<text value="Multiple patterns are separated by comma: *@example.org,*+*"/>
+						</vbox>
+					</groupbox>
+				</vbox>
+			</groupbox>
+		</vbox>
+	</prefpane>
+</prefwindow>
