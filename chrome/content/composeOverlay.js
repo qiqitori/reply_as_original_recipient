@@ -25,11 +25,33 @@ var ReplyAsOriginalRecipient = {
     if (!this.isReply())
       return;
 
-    /* Get original recipient */
-    originalHeader = this.getMessageHeaderFromURI(gMsgCompose.originalMsgURI);
-    originalRecipient = originalHeader.mime2DecodedRecipients;
-    if (originalRecipient.indexOf(",") != -1 || originalRecipient.indexOf("+") == -1)
-      return;
+    /* Get patterns preference (modified by Samuel Kirschner, according to the comment on https://blog.qiqitori.com/?p=194 ) */
+    var patterns = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService).getBranch("extensions.replyasoriginalrecipient.").getCharPref("patterns"); // default is "*+*"
+    var mimeConvert = Components.classes["@mozilla.org/messenger/mimeconverter;1"]
+        .getService(Components.interfaces.nsIMimeConverter);
+	patterns = patterns.trim().replace(/[^a-zA-Z0-9 ]/g, '\\$&').replace(/\\\*/g, '.*').split(/ *\\, */).join('|');
+	var regex = new RegExp('^ *(' + patterns + ') *$|< *(' + patterns + ') *>', 'i');
+	
+    /* Get original recipient (modified by Samuel Kirschner, according to the comment on https://blog.qiqitori.com/?p=194 ) */
+	var i;
+    var originalHeader = this.getMessageHeaderFromURI(gMsgCompose.originalMsgURI);
+    var originalRecipient = null;
+	
+	var recipientList = (originalHeader.recipients + ',' + originalHeader.ccList).split(/,/);
+	for (i = 0; i < recipientList.length; i++) {
+		var recipient = mimeConvert.decodeMimeHeader(recipientList[i].trim(), null, false, true);
+		if (recipient && regex.test(recipient)) {
+			if (originalRecipient !== null && originalRecipient !== recipientList[i].trim()) return; //abort in case there is more than one match
+			originalRecipient = mimeConvert.decodeMimeHeader(recipientList[i].trim(), null, false, true);
+		} 
+	}
+	if (originalRecipient === null) return; // abort in case there was no match
+	
+	// Remove any name part from the matched original recipient
+	var match = originalRecipient.match(/< *(.+?) *>/);
+	if (match) {
+		originalRecipient = match[1];
+	}
 
     /* Adapted from mail/components/compose/content/MsgComposeCommands.js */
     var customizeMenuitem = document.getElementById("cmd_customizeFromAddress");
@@ -39,7 +61,12 @@ var ReplyAsOriginalRecipient = {
     identityElement.removeAttribute("type");
     identityElement.editable = true;
     identityElement.focus(); // if we don't do this, we won't be able to send off our email. sounds odd but it's true
-    identityElement.value = originalRecipient;
+	if (identityElement.value.match(/<.+?>/)) {
+		identityElement.value = identityElement.value.replace(/<.+?>/, "<" + originalRecipient + ">");
+	}
+	else {
+		identityElement.value = originalRecipient;
+	}
     identityElement.select();
 
     /* Return focus to editor */
