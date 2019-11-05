@@ -32,6 +32,7 @@ var ReplyAsOriginalRecipient = {
     	.getCharPref("patterns"); // default is "*+*"
     var mimeConvert = Components.classes["@mozilla.org/messenger/mimeconverter;1"]
         .getService(Components.interfaces.nsIMimeConverter);
+    /* transform the simple patterns from the preference into a regular expression */
 	patterns = patterns.trim()
 		.replace(/[^a-zA-Z0-9 ]/g, '\\$&')
 		.replace(/\\\*/g, '.*')
