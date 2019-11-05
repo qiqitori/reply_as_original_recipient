@@ -10,7 +10,7 @@ Example:
 ```
 git clone https://github.com/qiqitori/reply_as_original_recipient.git
 cd reply_as_original_recipient
-zip -r * ../reply_as_original_recipient.xpi
+zip -r ../reply_as_original_recipient.xpi *
 ```
 
 To change the pattern for "To"/"CC" matching, go to Thunderbird's "about:config" dialog
