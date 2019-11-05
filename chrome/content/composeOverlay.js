@@ -26,27 +26,34 @@ var ReplyAsOriginalRecipient = {
       return;
 
     /* Get patterns preference (modified by Samuel Kirschner, according to the comment on https://blog.qiqitori.com/?p=194 ) */
-    var patterns = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService).getBranch("extensions.replyasoriginalrecipient.").getCharPref("patterns"); // default is "*+*"
+    var patterns = Components.classes["@mozilla.org/preferences-service;1"]
+    	.getService(Components.interfaces.nsIPrefService)
+    	.getBranch("extensions.replyasoriginalrecipient.")
+    	.getCharPref("patterns"); // default is "*+*"
     var mimeConvert = Components.classes["@mozilla.org/messenger/mimeconverter;1"]
         .getService(Components.interfaces.nsIMimeConverter);
-	patterns = patterns.trim().replace(/[^a-zA-Z0-9 ]/g, '\\$&').replace(/\\\*/g, '.*').split(/ *\\, */).join('|');
+	patterns = patterns.trim()
+		.replace(/[^a-zA-Z0-9 ]/g, '\\$&')
+		.replace(/\\\*/g, '.*')
+		.split(/ *\\, */)
+		.join('|');
 	var regex = new RegExp('^ *(' + patterns + ') *$|< *(' + patterns + ') *>', 'i');
-	
+
     /* Get original recipient (modified by Samuel Kirschner, according to the comment on https://blog.qiqitori.com/?p=194 ) */
 	var i;
     var originalHeader = this.getMessageHeaderFromURI(gMsgCompose.originalMsgURI);
     var originalRecipient = null;
-	
+
 	var recipientList = (originalHeader.recipients + ',' + originalHeader.ccList).split(/,/);
 	for (i = 0; i < recipientList.length; i++) {
 		var recipient = mimeConvert.decodeMimeHeader(recipientList[i].trim(), null, false, true);
 		if (recipient && regex.test(recipient)) {
 			if (originalRecipient !== null && originalRecipient !== recipientList[i].trim()) return; //abort in case there is more than one match
 			originalRecipient = mimeConvert.decodeMimeHeader(recipientList[i].trim(), null, false, true);
-		} 
+		}
 	}
 	if (originalRecipient === null) return; // abort in case there was no match
-	
+
 	// Remove any name part from the matched original recipient
 	var match = originalRecipient.match(/< *(.+?) *>/);
 	if (match) {
@@ -89,7 +96,7 @@ var ReplyAsOriginalRecipient = {
       case 'unload':
         document.documentElement.removeEventListener('compose-window-init', this, false);
         document.documentElement.removeEventListener('compose-window-close', this, false);
-        window.removeEventListener('unload', this, false);       
+        window.removeEventListener('unload', this, false);
         return;
     }
   },
