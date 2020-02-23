@@ -1,0 +1,1 @@
+pref("extensions.replyasoriginalrecipient.patterns", "*+*");
